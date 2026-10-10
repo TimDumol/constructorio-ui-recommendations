@@ -40,6 +40,9 @@ export interface CioRecommendationsPageProps
 /**
  * Renders every pod on a recommendation page from one page request.
  *
+ * Beta: available to a small group of users and may change. Contact your Customer Success
+ * Manager to request access.
+ *
  * Each pod is rendered by the same component as `CioRecommendations`, in its own
  * `[data-cnstrc-recommendations]` container carrying that pod's id and its own `result_id`.
  * The page's top-level `result_id` is not used for tracking.
