@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { IncludeComponentOverrides } from '@constructor-io/constructorio-ui-components';
 import ConstructorIOClient, { Nullable } from '@constructor-io/constructorio-client-javascript';
 import CioRecommendationsProvider from '../CioRecommendations/CioRecommendationsProvider';
@@ -52,7 +52,7 @@ export default function CioRecommendationsPage(props: CioRecommendationsPageProp
     apiKey,
     pageId,
     cioClient: customCioClient,
-    cioClientOptions,
+    cioClientOptions: customCioClientOptions = {},
     parameters,
     podSubheaders,
     itemFieldGetters: customItemFieldGetters,
@@ -60,6 +60,7 @@ export default function CioRecommendationsPage(props: CioRecommendationsPageProp
     componentOverrides,
   } = props;
 
+  const [cioClientOptions] = useState(customCioClientOptions);
   const cioClient = useCioClient({ apiKey, cioClient: customCioClient, options: cioClientOptions });
   const itemFieldGetters = useMemo(
     () => ({ ...defaultGetters, ...customItemFieldGetters }),
@@ -95,6 +96,7 @@ export default function CioRecommendationsPage(props: CioRecommendationsPageProp
             key={pod.response.pod.id}
             apiKey={apiKey}
             cioClient={cioClient}
+            cioClientOptions={cioClientOptions}
             podId={pod.response.pod.id}
             podSubheader={podSubheaders?.[pod.response.pod.id]}
             itemFieldGetters={customItemFieldGetters}
