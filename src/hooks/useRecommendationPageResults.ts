@@ -50,6 +50,9 @@ type PageCapableClient = ConstructorIOClient & {
 /**
  * A custom hook to retrieve every pod on a recommendation page in one request
  *
+ * Beta: available to a small group of users and may change. Contact your Customer Success
+ * Manager to request access.
+ *
  * Uses `recommendations.getRecommendationPage` from the Constructor JS client, which stamps each
  * pod's own `result_id` onto that pod's results and dispatches a per-pod
  * `getRecommendations.completed` event for tracking.
