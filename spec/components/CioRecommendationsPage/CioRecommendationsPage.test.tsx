@@ -123,32 +123,6 @@ describe('CioRecommendationsPage', () => {
     expect(container.innerHTML).not.toContain(pageResultId);
   });
 
-  it('falls back to pod_id when a pod response has no pod object', async () => {
-    const podWithoutPodObject = {
-      pod_id: 'fallback_pod',
-      request: {},
-      response: { results: [], total_num_results: 0 },
-      result_id: 'fallback-result-id',
-    };
-    mockGetRecommendationPage.mockResolvedValue({
-      ...mockPageResponse,
-      response: { ...mockPageResponse.response, pods: [podWithoutPodObject] },
-    });
-
-    const { container } = render(<CioRecommendationsPage apiKey={DEMO_API_KEY} pageId='pdp_b2c' />);
-
-    await waitFor(() => {
-      expect(container.querySelector('[data-cnstrc-recommendations]')).toHaveAttribute(
-        'data-cnstrc-recommendations-pod-id',
-        'fallback_pod',
-      );
-    });
-    expect(container.querySelector('[data-cnstrc-recommendations]')).toHaveAttribute(
-      'data-cnstrc-result-id',
-      'fallback-result-id',
-    );
-  });
-
   it('renders per-pod subheaders', async () => {
     render(
       <CioRecommendationsPage

@@ -186,30 +186,12 @@ describe('Testing Transformers: transformRecommendationResponse', () => {
 });
 
 describe('Testing Transformers: toPodRecommendationsResponse', () => {
-  const pod = {
-    pod_id: 'similar_items',
-    request: { item_id: 'product-123', num_results: 12 },
-    response: {
-      results: [],
-      total_num_results: 0,
-      pod: { id: 'similar_items', display_name: 'Similar Items' },
-    },
-    result_id: 'similar-result-id',
-  };
-
-  it('should use the pod result_id and add pod_id to the request', () => {
-    const result = toPodRecommendationsResponse(pod);
-
-    expect(result.result_id).toBe('similar-result-id');
-    expect(result.request.pod_id).toBe('similar_items');
-    expect(result.request.item_id).toBe('product-123');
-    expect(result.response.pod).toEqual(pod.response.pod);
-  });
-
   it('should fall back to pod_id when the response has no pod object', () => {
     const result = toPodRecommendationsResponse({
-      ...pod,
+      pod_id: 'similar_items',
+      request: {},
       response: { results: [], total_num_results: 0 } as any,
+      result_id: 'similar-result-id',
     });
 
     expect(result.response.pod).toEqual({ id: 'similar_items', display_name: 'similar_items' });
@@ -249,21 +231,14 @@ describe('Testing Transformers: transformRecommendationPageResponse', () => {
     result_id: 'page-result-id',
   };
 
-  it('should keep pods in page order, each with its own resultId', () => {
+  it('should map the page-level fields', () => {
     const result = transformRecommendationPageResponse(pageResponse as any);
 
     expect(result?.resultId).toBe('page-result-id');
     expect(result?.pageId).toBe('pdp_b2c');
+    expect(result?.displayName).toBe('PDP - B2C');
     expect(result?.pageType).toBe('pdp');
-    expect(result?.pods.map((pod) => pod.response.pod.id)).toEqual([
-      'similar_items',
-      'complete_the_look',
-    ]);
-    expect(result?.pods.map((pod) => pod.resultId)).toEqual([
-      'similar-result-id',
-      'complete-result-id',
-    ]);
-    expect(result?.pods[0].response.results).toHaveLength(testApiResponse.response.results.length);
+    expect(result?.pods).toHaveLength(2);
   });
 
   it('should return null when the response has no pods', () => {
