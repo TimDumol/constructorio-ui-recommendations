@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import ConstructorIOClient, { Nullable } from '@constructor-io/constructorio-client-javascript';
 import {
   ApiRecommendationPageResponse,
@@ -67,9 +67,14 @@ export default function useRecommendationPageResults(
   const [data, setData] = useState<Nullable<RecommendationPageData>>(null);
   const [status, setStatus] = useState<RequestStatus>(RequestStatus.IDLE);
   const [message, setMessage] = useState<Nullable<string>>(null);
+  const latestRequest = useRef(0);
 
   const fetchResult = useCallback(() => {
     if (!cioClient) return;
+
+    latestRequest.current += 1;
+    const requestId = latestRequest.current;
+    const isStale = () => requestId !== latestRequest.current;
 
     const { getRecommendationPage } = (cioClient as PageCapableClient).recommendations;
 
@@ -86,6 +91,7 @@ export default function useRecommendationPageResults(
     getRecommendationPage
       .call(cioClient.recommendations, pageId, parameters)
       .then((response) => {
+        if (isStale()) return;
         setData(
           transformRecommendationPageResponse(response, {
             itemFieldGetters: itemFieldGetters || {},
@@ -95,6 +101,7 @@ export default function useRecommendationPageResults(
         setMessage(null);
       })
       .catch((error) => {
+        if (isStale()) return;
         setData(null);
         setStatus(RequestStatus.ERROR);
         setMessage(error.message);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import CioRecommendationsPage from '../../../src/components/CioRecommendationsPage';
 import { MISSING_PAGE_METHOD_MESSAGE } from '../../../src/hooks/useRecommendationPageResults';
@@ -121,6 +121,33 @@ describe('CioRecommendationsPage', () => {
     expect(completeTheLook).toHaveAttribute('data-cnstrc-result-id', 'complete-result-id');
     expect(completeTheLook).toHaveAttribute('data-cnstrc-num-results', '0');
     expect(container.innerHTML).not.toContain(pageResultId);
+  });
+
+  it('ignores a response for a superseded pageId that resolves late', async () => {
+    let resolveStale: (value: unknown) => void = () => {};
+    mockGetRecommendationPage.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveStale = resolve;
+        }),
+    );
+    const stalePageResponse = {
+      ...mockPageResponse,
+      response: { ...mockPageResponse.response, pods: [mockPageResponse.response.pods[1]] },
+    };
+
+    const { container, rerender } = render(
+      <CioRecommendationsPage apiKey={DEMO_API_KEY} pageId='stale_page' />,
+    );
+    rerender(<CioRecommendationsPage apiKey={DEMO_API_KEY} pageId='pdp_b2c' />);
+
+    await waitFor(() => {
+      expect(container.querySelectorAll('[data-cnstrc-recommendations]')).toHaveLength(2);
+    });
+    await act(async () => {
+      resolveStale(stalePageResponse);
+    });
+    expect(container.querySelectorAll('[data-cnstrc-recommendations]')).toHaveLength(2);
   });
 
   it('renders per-pod subheaders', async () => {

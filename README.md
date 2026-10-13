@@ -83,7 +83,7 @@ function YourComponent() {
 
 > **Beta:** Recommendation pages are available to a small group of users and may change. Contact your Customer Success Manager to request access.
 
-`CioRecommendationsPage` renders every pod on a [recommendation page](https://docs.constructor.com/reference/v1-recommendations-get-page-results) from a single request. Each pod is rendered like `CioRecommendations`, in its own `[data-cnstrc-recommendations]` container that carries the pod's id and its own `result_id`. The page's top-level `result_id` identifies the request and is not used for tracking.
+`CioRecommendationsPage` renders every pod on a [recommendation page](https://docs.constructor.com/reference/v1-recommendations-get-page-results) from a single request. Each pod is rendered like `CioRecommendations`, in its own `[data-cnstrc-recommendations]` container that carries the pod's id and its own `result_id`. The page's top-level `result_id` identifies the request and is not used for tracking. An item appears in at most one pod on the page; which pod shows it is decided by Constructor and may change.
 
 Requires a version of `@constructor-io/constructorio-client-javascript` that provides `recommendations.getRecommendationPage`.
 
